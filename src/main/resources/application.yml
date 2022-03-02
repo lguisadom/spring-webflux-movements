@@ -1,0 +1,46 @@
+server:
+  port: 8085
+  
+spring:
+  application:
+    name: service-movements #(1)
+  profiles:
+    active:
+    - dev #(2)
+#MONGO
+  data:
+    mongodb:
+      authentication-database: movementsdb
+      host: localhost
+      port: 27017
+  cloud:
+    config:
+      profile: dev #(3) dev, qa, prod
+  config:
+    import: optional:configserver:http://localhost:8086 #(4)
+    
+#Endpoints
+config:
+  base:
+    customer:
+      endpoint: 'http://localhost:8082/api/v1/customer'
+    account:
+      endpoint: 'http://localhost:8083/api/v1/account'
+    credit:
+      endpoint: 'http://localhost:8084/api/v1/credit'
+
+    
+# 1.- Aqui se puede definir un nombre para la aplicacion, el cual reemplazará al 
+#     definido en el pom.xml.
+#
+# 2.- Profile que se desee cargar desde la carpeta resources. Este atributo 
+#     no es obligatorio.
+#
+# 3.- Define el perfil a recuperar desde el configserver. Lo ideal es que 
+#     este valor sea especificado de forma externa p. ej. por linea de 
+#     comandos al iniciar el ms.
+#
+# 4.- Esta es la nueva forma de configurar el acceso al configserver
+#     a partir de la version 2.4.x de springboot. El atributo optional
+#     indica que si el ms no puede contactar al configserver, no dará
+#     un error y continuara con la carga del servicio.
