@@ -51,6 +51,20 @@ public class CreditProxyImpl implements CreditProxy {
 				.retrieve()
 				.bodyToMono(Credit.class);
 	}
+	
+	@Override
+	public Mono<Credit> findByAccountNumber(String accountNumber) {		
+		Map<String,Object> params = new HashMap<>();
+		params.put("accountNumber", accountNumber);
+		return webClientBuilder
+				.clientConnector(RestUtils.getDefaultClientConnector())
+				.build()
+				.get()
+				.uri(endpointCredit + "/accountNumber/{accountNumber}", params)
+				.retrieve()
+				.bodyToMono(Credit.class);
+		
+	}
 
 	@Override
 	public Mono<Credit> update(Credit credit) {
@@ -58,4 +72,19 @@ public class CreditProxyImpl implements CreditProxy {
 		return null;
 	}
 
+	@Override
+	public Mono<Credit> updateAmount(Long id, Double amount) {
+		Map<String,Object> params = new HashMap<>();
+		params.put("id", id);
+		params.put("amount", amount);
+		String url = endpointCredit + "/update/{id}/amount/{amount}";
+		LOGGER.info("url: " + url);
+		return webClientBuilder
+				.clientConnector(RestUtils.getDefaultClientConnector())
+				.build()
+				.put()
+				.uri(url, params)
+				.retrieve()
+				.bodyToMono(Credit.class);
+	}	
 }

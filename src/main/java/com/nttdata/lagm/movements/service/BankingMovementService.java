@@ -11,8 +11,8 @@ public interface BankingMovementService {
 	Mono<BankingMovement> create(BankingMovement bankingMovement);
 	Mono<BakingMovementResponse> deposit(MovementRequest movementRequest);
 	Mono<BakingMovementResponse> withdraw(MovementRequest movementRequest);
-	Mono<BankingMovement> pay(MovementRequest movementRequest);
-	Mono<BankingMovement> charge(MovementRequest movementRequest);
+	Mono<BakingMovementResponse> pay(MovementRequest movementRequest);
+	Mono<BakingMovementResponse> charge(MovementRequest movementRequest);
 	Flux<BankingMovement> findAll();
 	Mono<BankingMovement> findById(String id);
 }

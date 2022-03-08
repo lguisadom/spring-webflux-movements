@@ -1,8 +1,6 @@
 package com.nttdata.lagm.movements.service;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +12,6 @@ import com.nttdata.lagm.movements.entity.MovementRequest;
 import com.nttdata.lagm.movements.model.BankingMovement;
 import com.nttdata.lagm.movements.proxy.AccountProxy;
 import com.nttdata.lagm.movements.proxy.CreditProxy;
-import com.nttdata.lagm.movements.proxy.CustomerProxy;
 import com.nttdata.lagm.movements.repository.BankingMovementRepository;
 import com.nttdata.lagm.movements.util.Constants;
 import com.nttdata.lagm.movements.util.Util;
@@ -35,9 +32,6 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 	
 	@Autowired
 	private CreditProxy creditProxy;
-	
-	@Autowired
-	private CustomerProxy customerProxy;
 
 	@Override
 	public Mono<BankingMovement> create(BankingMovement bankingMovement) {
@@ -97,17 +91,52 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 	}
 
 	@Override
-	public Mono<BankingMovement> pay(MovementRequest movementRequest) {
+	public Mono<BakingMovementResponse> pay(MovementRequest movementRequest) {
 		BigDecimal amount = new BigDecimal(movementRequest.getAmount());
 		String accountNumber = movementRequest.getAccountNumber();
-		return null;
+		return creditProxy.findByAccountNumber(accountNumber)
+				.flatMap(credit -> {
+					LOGGER.info("credit: " + credit.toString());
+					BankingMovement bankingMovement = new BankingMovement();
+					bankingMovement.setBankProductId(credit.getId());
+					bankingMovement.setBankingMovementType(Constants.ID_BANK_PRODUCT_CREDIT_PAYMENT);
+					bankingMovement.setDate(Util.getToday());
+					bankingMovement.setAmount(amount.toString());
+
+					return create(bankingMovement)
+							.flatMap(movement -> {
+								return creditProxy.updateAmount(movement.getBankProductId(), Double.valueOf(movement.getAmount()))
+										.flatMap(accountUpdated -> {
+											BakingMovementResponse bakingMovementResponse = new BakingMovementResponse(movement, "Movement ok");
+											return Mono.just(bakingMovementResponse);
+										});
+							});
+				});
 	}
 
 	@Override
-	public Mono<BankingMovement> charge(MovementRequest movementRequest) {
+	public Mono<BakingMovementResponse> charge(MovementRequest movementRequest) {
 		BigDecimal amount = new BigDecimal(movementRequest.getAmount());
 		String accountNumber = movementRequest.getAccountNumber();
-		return null;
+		return creditProxy.findByAccountNumber(accountNumber)
+				.flatMap(credit -> {
+					LOGGER.info("credit: " + credit.toString());
+					BankingMovement bankingMovement = new BankingMovement();
+					bankingMovement.setBankProductId(credit.getId());
+					bankingMovement.setBankingMovementType(Constants.ID_BANK_PRODUCT_CREDIT_CHARGE);
+					bankingMovement.setDate(Util.getToday());
+					bankingMovement.setAmount(amount.multiply(new BigDecimal(-1)).toString());
+
+					return create(bankingMovement)
+							.flatMap(movement -> {
+								
+								return creditProxy.updateAmount(movement.getBankProductId(), Double.valueOf(movement.getAmount()))
+										.flatMap(accountUpdated -> {
+											BakingMovementResponse bakingMovementResponse = new BakingMovementResponse(movement, "Movement ok");
+											return Mono.just(bakingMovementResponse);
+										});
+							});
+				});
 	}
 
 	@Override
@@ -118,14 +147,6 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 	@Override
 	public Mono<BankingMovement> findById(String id) {
 		return bankingMovementRepository.findById(id);
-	}
-	
-	private Mono<Void> checkMovementNotExists(String id) {
-		return bankingMovementRepository.findById(id)
-				.flatMap(movement -> {
-					return Mono.error(new Exception("Movimiento bancario con id: " + id + " ya existe"));
-				})
-				.then();
 	}
 
 	private Mono<Void> checkBankProductExist(Long bankProductId, Integer bankingMovementTypeId) {
@@ -155,39 +176,4 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 		}
 		return Mono.empty();
 	}
-	
-//	private Mono<BankingMovement> executeMovement(BankingMovement bankingMovement) {
-//		Mono<BankingMovement> MonoBankingMovement;
-//		Integer bankingMovementTypeId = bankingMovement.getBankingMovementType();
-//		BigDecimal amount = new BigDecimal(bankingMovement.getAmount());
-//		Long bankProductId = bankingMovement.getBankProductId();
-//		
-//		if (Constants.ID_BANK_PRODUCT_ACCOUNT_DEPOSIT == bankingMovementTypeId) {
-//			
-//			
-//		} else if (Constants.ID_BANK_PRODUCT_ACCOUNT_WITHDRAWAL == bankingMovementTypeId) {
-//			return accountProxy.findById(bankProductId)
-//					.flatMap(account -> {
-//						BigDecimal avaliableAmount = new BigDecimal(account.getAmount());
-//						if (avaliableAmount.compareTo(amount) > 0) {
-//							avaliableAmount.subtract(amount);
-//							account.setAmount(avaliableAmount.toString());
-//							return account;
-//						} else {
-//							return Mono.error(new Exception("Monto no disponible"));
-//						}
-//					})
-//					.flatmap(account -> {
-//						return account;
-//					})
-//					;
-//			
-//		} else if (Constants.ID_BANK_PRODUCT_CREDIT_PAYMENT == bankingMovementTypeId) {
-//			
-//		} else if (Constants.ID_BANK_PRODUCT_CREDIT_CHARGE == bankingMovementTypeId) {
-//			
-//		}
-//		
-//		return Mono.empty();
-//	}
 }

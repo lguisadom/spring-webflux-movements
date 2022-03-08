@@ -38,6 +38,18 @@ public class BankingMovementController {
 		return bankingMovementService.withdraw(movementRequest);
 	}
 	
+	@PostMapping("/pay")
+	@ResponseStatus(HttpStatus.CREATED)
+	private Mono<BakingMovementResponse> pay(@RequestBody MovementRequest movementRequest) {
+		return bankingMovementService.pay(movementRequest);
+	}
+	
+	@PostMapping("/charge")
+	@ResponseStatus(HttpStatus.CREATED)
+	private Mono<BakingMovementResponse> charge(@RequestBody MovementRequest movementRequest) {
+		return bankingMovementService.charge(movementRequest);
+	}
+	
 	@GetMapping
 	@ResponseStatus(HttpStatus.OK)
 	private Flux<BankingMovement>findAll() {
