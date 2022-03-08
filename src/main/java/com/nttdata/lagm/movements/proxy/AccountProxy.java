@@ -1,6 +1,6 @@
 package com.nttdata.lagm.movements.proxy;
 
-import com.nttdata.lagm.movements.model.account.BankAccount;
+import com.nttdata.lagm.movements.model.bankproduct.BankAccount;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -8,5 +8,7 @@ import reactor.core.publisher.Mono;
 public interface AccountProxy {
 	public Flux<BankAccount> findAll();
 	public Mono<BankAccount> findById(Long id);
+	public Mono<BankAccount> findByAccountNumber(String accountNumber);
 	public Mono<BankAccount> update(BankAccount bankAccount);
+	public Mono<BankAccount> updateAmount(Long id, String amount);
 }

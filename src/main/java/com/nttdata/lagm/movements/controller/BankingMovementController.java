@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nttdata.lagm.movements.entity.BakingMovementResponse;
+import com.nttdata.lagm.movements.entity.MovementRequest;
 import com.nttdata.lagm.movements.model.BankingMovement;
 import com.nttdata.lagm.movements.service.BankingMovementService;
 
@@ -24,10 +26,16 @@ public class BankingMovementController {
 	@Autowired
 	private BankingMovementService bankingMovementService;
 	
-	@PostMapping
+	@PostMapping("/deposit")
 	@ResponseStatus(HttpStatus.CREATED)
-	private void create(@RequestBody BankingMovement bankingMovement) {
-		bankingMovementService.create(bankingMovement);
+	private Mono<BakingMovementResponse> deposit(@RequestBody MovementRequest movementRequest) {
+		return bankingMovementService.deposit(movementRequest);
+	}
+	
+	@PostMapping("/withdraw")
+	@ResponseStatus(HttpStatus.CREATED)
+	private Mono<BakingMovementResponse> withdraw(@RequestBody MovementRequest movementRequest) {
+		return bankingMovementService.withdraw(movementRequest);
 	}
 	
 	@GetMapping
@@ -38,7 +46,7 @@ public class BankingMovementController {
 	
 	@GetMapping("/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	private Mono<BankingMovement>findById(@PathVariable("id") Long id) {
+	private Mono<BankingMovement>findById(@PathVariable("id") String id) {
 		return bankingMovementService.findById(id);
 	}
 }
