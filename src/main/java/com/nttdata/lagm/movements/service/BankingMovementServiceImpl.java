@@ -95,8 +95,8 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 	public Mono<BakingMovementResponse> pay(MovementRequest movementRequest) {
 		BigDecimal amount = new BigDecimal(movementRequest.getAmount());
 		String accountNumber = movementRequest.getAccountNumber();
-		return creditProxy.findByAccountNumber(accountNumber)
-				.flatMap(credit -> {
+		return checkCreditNumberExists(accountNumber)
+				.then(creditProxy.findByAccountNumber(accountNumber).flatMap(credit -> {
 					LOGGER.info("credit: " + credit.toString());
 					BankingMovement bankingMovement = new BankingMovement();
 					bankingMovement.setBankProductId(credit.getId());
@@ -104,23 +104,25 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 					bankingMovement.setDate(Util.getToday());
 					bankingMovement.setAmount(amount.toString());
 
-					return create(bankingMovement)
-							.flatMap(movement -> {
-								return creditProxy.updateAmount(movement.getBankProductId(), Double.valueOf(movement.getAmount()))
-										.flatMap(accountUpdated -> {
-											BakingMovementResponse bakingMovementResponse = new BakingMovementResponse(movement, "Movement ok");
-											return Mono.just(bakingMovementResponse);
-										});
-							});
-				});
+					return create(bankingMovement).flatMap(movement -> {
+						return creditProxy
+								.updateAmount(movement.getBankProductId(), Double.valueOf(movement.getAmount()))
+								.flatMap(accountUpdated -> {
+									BakingMovementResponse bakingMovementResponse = new BakingMovementResponse(movement,
+											"Movement ok");
+									return Mono.just(bakingMovementResponse);
+								});
+					});
+				}));
 	}
 
 	@Override
 	public Mono<BakingMovementResponse> charge(MovementRequest movementRequest) {
 		BigDecimal amount = new BigDecimal(movementRequest.getAmount());
 		String accountNumber = movementRequest.getAccountNumber();
-		return creditProxy.findByAccountNumber(accountNumber)
-				.flatMap(credit -> {
+		return checkCreditNumberExists(accountNumber)
+				.mergeWith(checkAvailableAmountInCredit(movementRequest))
+				.then(creditProxy.findByAccountNumber(accountNumber).flatMap(credit -> {
 					LOGGER.info("credit: " + credit.toString());
 					BankingMovement bankingMovement = new BankingMovement();
 					bankingMovement.setBankProductId(credit.getId());
@@ -128,17 +130,19 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 					bankingMovement.setDate(Util.getToday());
 					bankingMovement.setAmount(amount.multiply(new BigDecimal(-1)).toString());
 
-					return create(bankingMovement)
-							.flatMap(movement -> {
-								
-								return creditProxy.updateAmount(movement.getBankProductId(), Double.valueOf(movement.getAmount()))
-										.flatMap(accountUpdated -> {
-											BakingMovementResponse bakingMovementResponse = new BakingMovementResponse(movement, "Movement ok");
-											return Mono.just(bakingMovementResponse);
-										});
-							});
-				});
+					return create(bankingMovement).flatMap(movement -> {
+
+						return creditProxy
+								.updateAmount(movement.getBankProductId(), Double.valueOf(movement.getAmount()))
+								.flatMap(accountUpdated -> {
+									BakingMovementResponse bakingMovementResponse = new BakingMovementResponse(movement,
+											"Movement ok");
+									return Mono.just(bakingMovementResponse);
+								});
+					});
+				}));
 	}
+
 
 	@Override
 	public Flux<BankingMovement> findAll() {
@@ -192,9 +196,33 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 				});
 	}
 	
+	private Mono<Void> checkAvailableAmountInCredit(MovementRequest movementRequest) {
+		BigDecimal amount = new BigDecimal(movementRequest.getAmount());
+		String accountNumber = movementRequest.getAccountNumber();
+		return creditProxy.findByAccountNumber(accountNumber)
+				.flatMap(credit -> {
+					BigDecimal currentAmount = new BigDecimal(credit.getAmount());
+					BigDecimal creditLimit = new BigDecimal(credit.getCreditLimit());
+					BigDecimal availableAmount = creditLimit.add(currentAmount);
+					if (amount.compareTo(availableAmount) > 0) {
+						return Mono.error(new Exception("El monto a consumir es mayor que el disponible"));
+					}
+					
+					return Mono.empty();
+				});
+	}
+	
 	private Mono<Void> checkAccountNumberExists(String accountNumber) {
 		return accountProxy.findByAccountNumber(accountNumber)
-				.switchIfEmpty(Mono.error(new Exception("Cuenta bancaria con número de cuenta: " + accountNumber + " no existe")))
+				.switchIfEmpty(Mono
+						.error(new Exception("Cuenta bancaria con número de cuenta: " + accountNumber + " no existe")))
+				.then();
+	}
+	
+	private Mono<Void> checkCreditNumberExists(String accountNumber) {
+		return creditProxy.findByAccountNumber(accountNumber)
+				.switchIfEmpty(
+						Mono.error(new Exception("Crédito con número de cuenta: " + accountNumber + " no existe")))
 				.then();
 	}
 }
