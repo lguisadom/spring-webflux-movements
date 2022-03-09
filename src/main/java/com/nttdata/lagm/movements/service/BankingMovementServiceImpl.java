@@ -46,7 +46,7 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 	public Mono<BakingMovementResponse> deposit(MovementRequest movementRequest) {
 		BigDecimal amount = new BigDecimal(movementRequest.getAmount());
 		String accountNumber = movementRequest.getAccountNumber();
-		return checkAccountNumberExists(movementRequest.getAccountNumber())
+		return checkAccountNumberExists(accountNumber)
 				.then(accountProxy.findByAccountNumber(accountNumber).flatMap(account -> {
 					LOGGER.info("account: " + account.toString());
 					BankingMovement bankingMovement = new BankingMovement();
@@ -70,7 +70,7 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 	public Mono<BakingMovementResponse> withdraw(MovementRequest movementRequest) {
 		BigDecimal amount = new BigDecimal(movementRequest.getAmount());
 		String accountNumber = movementRequest.getAccountNumber();
-		return checkAccountNumberExists(movementRequest.getAccountNumber())
+		return checkAccountNumberExists(accountNumber)
 				.mergeWith(checkAvailableAmountInAccount(movementRequest))
 				.then(accountProxy.findByAccountNumber(accountNumber).flatMap(account -> {
 					LOGGER.info("account: " + account.toString());
