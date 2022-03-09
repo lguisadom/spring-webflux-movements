@@ -46,8 +46,8 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 	public Mono<BakingMovementResponse> deposit(MovementRequest movementRequest) {
 		BigDecimal amount = new BigDecimal(movementRequest.getAmount());
 		String accountNumber = movementRequest.getAccountNumber();
-		return accountProxy.findByAccountNumber(accountNumber)
-				.flatMap(account -> {
+		return checkAccountNumberExists(movementRequest.getAccountNumber())
+				.then(accountProxy.findByAccountNumber(accountNumber).flatMap(account -> {
 					LOGGER.info("account: " + account.toString());
 					BankingMovement bankingMovement = new BankingMovement();
 					bankingMovement.setBankProductId(account.getId());
@@ -55,23 +55,24 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 					bankingMovement.setDate(Util.getToday());
 					bankingMovement.setAmount(amount.toString());
 
-					return create(bankingMovement)
-							.flatMap(movement -> {
-								return accountProxy.updateAmount(movement.getBankProductId(), movement.getAmount())
-										.flatMap(accountUpdated -> {
-											BakingMovementResponse bakingMovementResponse = new BakingMovementResponse(movement, "Movement ok");
-											return Mono.just(bakingMovementResponse);
-										});
-							});
-				});
+					return create(bankingMovement).flatMap(movement -> {
+						return accountProxy.updateAmount(movement.getBankProductId(), movement.getAmount())
+								.flatMap(accountUpdated -> {
+									BakingMovementResponse bakingMovementResponse = new BakingMovementResponse(movement,
+											"Movement ok");
+									return Mono.just(bakingMovementResponse);
+								});
+					});
+				}));
 	}
 
 	@Override
 	public Mono<BakingMovementResponse> withdraw(MovementRequest movementRequest) {
 		BigDecimal amount = new BigDecimal(movementRequest.getAmount());
 		String accountNumber = movementRequest.getAccountNumber();
-		return accountProxy.findByAccountNumber(accountNumber)
-				.flatMap(account -> {
+		return checkAccountNumberExists(movementRequest.getAccountNumber())
+				.mergeWith(checkAvailableAmountInAccount(movementRequest))
+				.then(accountProxy.findByAccountNumber(accountNumber).flatMap(account -> {
 					LOGGER.info("account: " + account.toString());
 					BankingMovement bankingMovement = new BankingMovement();
 					bankingMovement.setBankProductId(account.getId());
@@ -79,15 +80,15 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 					bankingMovement.setDate(Util.getToday());
 					bankingMovement.setAmount(amount.multiply(new BigDecimal(-1)).toString());
 
-					return create(bankingMovement)
-							.flatMap(movement -> {
-								return accountProxy.updateAmount(movement.getBankProductId(), movement.getAmount())
-										.flatMap(accountUpdated -> {
-											BakingMovementResponse bakingMovementResponse = new BakingMovementResponse(movement, "Movement ok");
-											return Mono.just(bakingMovementResponse);
-										});
-							});
-				});
+					return create(bankingMovement).flatMap(movement -> {
+						return accountProxy.updateAmount(movement.getBankProductId(), movement.getAmount())
+								.flatMap(accountUpdated -> {
+									BakingMovementResponse bakingMovementResponse = new BakingMovementResponse(movement,
+											"Movement ok");
+									return Mono.just(bakingMovementResponse);
+								});
+					});
+				}));
 	}
 
 	@Override
@@ -175,5 +176,25 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 				return Mono.error(new Exception("Debe ingresar un id de movimiento bancario válido. " + Util.bankMovementTypeValidInfo()));
 		}
 		return Mono.empty();
+	}
+	
+	private Mono<Void> checkAvailableAmountInAccount(MovementRequest movementRequest) {
+		BigDecimal amount = new BigDecimal(movementRequest.getAmount());
+		String accountNumber = movementRequest.getAccountNumber();
+		return accountProxy.findByAccountNumber(accountNumber)
+				.flatMap(account -> {
+					BigDecimal availableAmount = new BigDecimal(account.getAmount());
+					if (amount.compareTo(availableAmount) > 0) {
+						return Mono.error(new Exception("El monto a retirar es mayor al disponible"));
+					}
+					
+					return Mono.empty();
+				});
+	}
+	
+	private Mono<Void> checkAccountNumberExists(String accountNumber) {
+		return accountProxy.findByAccountNumber(accountNumber)
+				.switchIfEmpty(Mono.error(new Exception("Cuenta bancaria con número de cuenta: " + accountNumber + " no existe")))
+				.then();
 	}
 }
