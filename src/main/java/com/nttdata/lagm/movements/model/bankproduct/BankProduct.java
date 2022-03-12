@@ -6,9 +6,10 @@ import lombok.ToString;
 @Data
 @ToString
 public abstract class BankProduct {
-	private Long id;
+	private String id;
 	private String accountNumber;
 	private String cci;
 	private Long customerId;
 	private String amount;
+	private Boolean status;
 }

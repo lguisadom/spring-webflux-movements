@@ -3,6 +3,7 @@ package com.nttdata.lagm.movements.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,7 +51,7 @@ public class BankingMovementController {
 		return bankingMovementService.charge(movementRequest);
 	}
 	
-	@GetMapping
+	@GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	@ResponseStatus(HttpStatus.OK)
 	private Flux<BankingMovement>findAll() {
 		return bankingMovementService.findAll();
@@ -60,5 +61,17 @@ public class BankingMovementController {
 	@ResponseStatus(HttpStatus.OK)
 	private Mono<BankingMovement>findById(@PathVariable("id") String id) {
 		return bankingMovementService.findById(id);
+	}
+	
+	@GetMapping(value = "/bankAccount/accountNumber/{accountNumber}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	@ResponseStatus(HttpStatus.OK)
+	private Flux<BankingMovement> findAllAccountMovementsByAccountNumber(@PathVariable("accountNumber") String accountNumber) {
+		return bankingMovementService.findAllAccountMovementsByAccountNumber(accountNumber);
+	}
+	
+	@GetMapping(value = "/credit/accountNumber/{accountNumber}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	@ResponseStatus(HttpStatus.OK)
+	private Flux<BankingMovement> findAllCreditMovementsByAccountNumber(@PathVariable("accountNumber") String accountNumber) {
+		return bankingMovementService.findAllCreditMovementsByAccountNumber(accountNumber);
 	}
 }

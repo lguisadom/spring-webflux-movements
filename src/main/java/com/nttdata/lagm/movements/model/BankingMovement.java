@@ -23,7 +23,7 @@ public class BankingMovement {
 	@Id
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id;
-	private Long bankProductId;
+	private String bankProductId;
 	// private Long bankProductTypeId;
 	private Integer bankingMovementType;
 	private String date;

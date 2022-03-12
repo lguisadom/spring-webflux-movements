@@ -36,8 +36,7 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 	@Override
 	public Mono<BankingMovement> create(BankingMovement bankingMovement) {
 		LOGGER.info("Create movement: " + bankingMovement);
-		return //checkMovementNotExists(bankingMovement.getId())
-				checkBankProductExist(bankingMovement.getBankProductId(), bankingMovement.getBankingMovementType())
+		return checkBankProductExist(bankingMovement.getBankProductId(), bankingMovement.getBankingMovementType())
 				.mergeWith(checkBankMovementTypeExist(bankingMovement.getBankingMovementType()))
 				.then(this.bankingMovementRepository.save(bankingMovement));
 	}
@@ -154,7 +153,7 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 		return bankingMovementRepository.findById(id);
 	}
 
-	private Mono<Void> checkBankProductExist(Long bankProductId, Integer bankingMovementTypeId) {
+	private Mono<Void> checkBankProductExist(String bankProductId, Integer bankingMovementTypeId) {
 
 		if (Constants.ID_BANK_PRODUCT_ACCOUNT_DEPOSIT == bankingMovementTypeId ||
 			Constants.ID_BANK_PRODUCT_ACCOUNT_WITHDRAWAL == bankingMovementTypeId) {
@@ -224,5 +223,34 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 				.switchIfEmpty(
 						Mono.error(new Exception("Crédito con número de cuenta: " + accountNumber + " no existe")))
 				.then();
+	}
+
+	@Override
+	public Flux<BankingMovement> findAllAccountMovementsByAccountNumber(String accountNumber) {
+		return accountProxy.findByAccountNumber(accountNumber).flatMapMany(account -> {
+			return bankingMovementRepository.findAll()
+					.filter(movement -> movement.getBankProductId().equals(account.getId()));
+		});
+	}
+
+	@Override
+	public Flux<BankingMovement> findAllCreditMovementsByAccountNumber(String accountNumber) {
+		return creditProxy.findByAccountNumber(accountNumber)
+			.flatMapMany(credit -> {
+				return bankingMovementRepository.findAll()
+					.filter(movement -> movement.getBankProductId().equals(credit.getId()));
+			});
+	}
+
+	@Override
+	public Flux<BankingMovement> findAllAccountMovementsByDni(String dni) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Flux<BankingMovement> findAllCreditMovementsByDni(String dni) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

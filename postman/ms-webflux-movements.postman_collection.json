@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"accountNumber\": \"1111111111\",\r\n    \"amount\": \"50.00\"\r\n}",
+					"raw": "{\r\n    \"accountNumber\": \"19135813408053\",\r\n    \"amount\": \"50.00\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -43,7 +43,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"accountNumber\": \"1111111111\",\r\n    \"amount\": \"10.00\"\r\n}",
+					"raw": "{\r\n    \"accountNumber\": \"19135813408053\",\r\n    \"amount\": \"25\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -74,7 +74,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"accountNumber\": \"0000000001\",\r\n    \"amount\": \"40.00\"\r\n}",
+					"raw": "{\r\n    \"accountNumber\": \"29135813408052\",\r\n    \"amount\": \"52.00\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -105,7 +105,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"accountNumber\": \"0000000001\",\r\n    \"amount\": \"30.00\"\r\n}",
+					"raw": "{\r\n    \"accountNumber\": \"29135813408052\",\r\n    \"amount\": \"52.00\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -145,6 +145,76 @@
 						"api",
 						"v1",
 						"movement"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "findBy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/api/v1/movement/622c365a0427390b4bb02328",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"api",
+						"v1",
+						"movement",
+						"622c365a0427390b4bb02328"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "findAccountMovementsByAccountNumber",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/api/v1/movement/bankAccount/accountNumber/19135813408053",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"api",
+						"v1",
+						"movement",
+						"bankAccount",
+						"accountNumber",
+						"19135813408053"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "findCreditMovementsByAccountNumber",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/api/v1/movement/credit/accountNumber/29135813408051",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"api",
+						"v1",
+						"movement",
+						"credit",
+						"accountNumber",
+						"29135813408051"
 					]
 				}
 			},

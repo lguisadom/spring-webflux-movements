@@ -7,8 +7,8 @@ import reactor.core.publisher.Mono;
 
 public interface CreditProxy {
 	public Flux<Credit> findAll();
-	public Mono<Credit> findById(Long id);
+	public Mono<Credit> findById(String id);
 	public Mono<Credit> findByAccountNumber(String accountNumber);
 	public Mono<Credit> update(Credit credit);
-	public Mono<Credit> updateAmount(Long id, Double amount);
+	public Mono<Credit> updateAmount(String id, Double amount);
 }

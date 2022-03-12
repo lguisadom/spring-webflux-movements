@@ -40,7 +40,7 @@ public class CreditProxyImpl implements CreditProxy {
 	}
 
 	@Override
-	public Mono<Credit> findById(Long id) {
+	public Mono<Credit> findById(String id) {
 		Map<String,Object> params = new HashMap<>();
 		params.put("id", id);
 		return webClientBuilder
@@ -73,7 +73,7 @@ public class CreditProxyImpl implements CreditProxy {
 	}
 
 	@Override
-	public Mono<Credit> updateAmount(Long id, Double amount) {
+	public Mono<Credit> updateAmount(String id, Double amount) {
 		Map<String,Object> params = new HashMap<>();
 		params.put("id", id);
 		params.put("amount", amount);

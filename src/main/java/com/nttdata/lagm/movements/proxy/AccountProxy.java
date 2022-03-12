@@ -7,8 +7,8 @@ import reactor.core.publisher.Mono;
 
 public interface AccountProxy {
 	public Flux<BankAccount> findAll();
-	public Mono<BankAccount> findById(Long id);
+	public Mono<BankAccount> findById(String id);
 	public Mono<BankAccount> findByAccountNumber(String accountNumber);
 	public Mono<BankAccount> update(BankAccount bankAccount);
-	public Mono<BankAccount> updateAmount(Long id, String amount);
+	public Mono<BankAccount> updateAmount(String id, String amount);
 }

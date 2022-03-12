@@ -43,7 +43,7 @@ public class AccountProxyImpl implements AccountProxy {
 	}
 	
 	@Override
-	public Mono<BankAccount> findById(Long id) {		
+	public Mono<BankAccount> findById(String id) {		
 		Map<String,Object> params = new HashMap<>();
 		params.put("id", id);
 		return webClientBuilder
@@ -82,7 +82,7 @@ public class AccountProxyImpl implements AccountProxy {
 	}
 	
 	@Override
-	public Mono<BankAccount> updateAmount(Long id, String amount) {
+	public Mono<BankAccount> updateAmount(String id, String amount) {
 		Map<String,Object> params = new HashMap<>();
 		params.put("id", id);
 		params.put("amount", amount);

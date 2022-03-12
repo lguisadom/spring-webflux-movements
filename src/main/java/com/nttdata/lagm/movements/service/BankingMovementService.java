@@ -15,4 +15,8 @@ public interface BankingMovementService {
 	Mono<BakingMovementResponse> charge(MovementRequest movementRequest);
 	Flux<BankingMovement> findAll();
 	Mono<BankingMovement> findById(String id);
+	Flux<BankingMovement> findAllAccountMovementsByAccountNumber(String accountNumber);
+	Flux<BankingMovement> findAllCreditMovementsByAccountNumber(String accountNumber);
+	Flux<BankingMovement> findAllAccountMovementsByDni(String dni);
+	Flux<BankingMovement> findAllCreditMovementsByDni(String dni);
 }
