@@ -12,6 +12,7 @@ import com.nttdata.lagm.movements.entity.MovementRequest;
 import com.nttdata.lagm.movements.model.BankingMovement;
 import com.nttdata.lagm.movements.proxy.AccountProxy;
 import com.nttdata.lagm.movements.proxy.CreditProxy;
+import com.nttdata.lagm.movements.proxy.CustomerProxy;
 import com.nttdata.lagm.movements.repository.BankingMovementRepository;
 import com.nttdata.lagm.movements.util.Constants;
 import com.nttdata.lagm.movements.util.Util;
@@ -32,6 +33,9 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 	
 	@Autowired
 	private CreditProxy creditProxy;
+	
+	@Autowired
+	private CustomerProxy customerProxy;
 
 	@Override
 	public Mono<BankingMovement> create(BankingMovement bankingMovement) {
@@ -243,14 +247,15 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 	}
 
 	@Override
-	public Flux<BankingMovement> findAllAccountMovementsByDni(String dni) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Flux<BankingMovement> findAllCreditMovementsByDni(String dni) {
-		// TODO Auto-generated method stub
-		return null;
+	public Flux<BankingMovement> findAllMovementsByDni(String dni) {
+		return customerProxy.findByDni(dni)
+			.flatMapMany(customer -> {
+				return accountProxy.findAll()
+						.filter(account -> account.getCustomerId().equals(customer.getId()));
+			})
+			.flatMap(account -> {
+				return bankingMovementRepository.findAll()
+						.filter(movement -> movement.getBankProductId().equals(account.getId()));
+			});
 	}
 }

@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"accountNumber\": \"19135813408053\",\r\n    \"amount\": \"50.00\"\r\n}",
+					"raw": "{\r\n    \"accountNumber\": \"19135813408051\",\r\n    \"amount\": \"50.00\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -43,7 +43,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"accountNumber\": \"19135813408053\",\r\n    \"amount\": \"25\"\r\n}",
+					"raw": "{\r\n    \"accountNumber\": \"19135813408051\",\r\n    \"amount\": \"25\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -178,7 +178,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8085/api/v1/movement/bankAccount/accountNumber/19135813408053",
+					"raw": "http://localhost:8085/api/v1/movement/bankAccount/accountNumber/19135813408051",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -190,7 +190,7 @@
 						"movement",
 						"bankAccount",
 						"accountNumber",
-						"19135813408053"
+						"19135813408051"
 					]
 				}
 			},
@@ -215,6 +215,29 @@
 						"credit",
 						"accountNumber",
 						"29135813408051"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "findMovementsByDni",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/api/v1/movement/dni/46687130",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"api",
+						"v1",
+						"movement",
+						"dni",
+						"46687130"
 					]
 				}
 			},

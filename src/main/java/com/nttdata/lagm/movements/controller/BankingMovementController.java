@@ -74,4 +74,10 @@ public class BankingMovementController {
 	private Flux<BankingMovement> findAllCreditMovementsByAccountNumber(@PathVariable("accountNumber") String accountNumber) {
 		return bankingMovementService.findAllCreditMovementsByAccountNumber(accountNumber);
 	}
+
+	@GetMapping(value="/dni/{dni}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	@ResponseStatus(HttpStatus.OK)
+	private Flux<BankingMovement> findAllMovementsByDni(@PathVariable("dni") String dni) {
+		return bankingMovementService.findAllMovementsByDni(dni);
+	}
 }

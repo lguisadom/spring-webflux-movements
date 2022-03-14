@@ -7,5 +7,6 @@ import reactor.core.publisher.Mono;
 
 public interface CustomerProxy {
 	public Flux<Customer> findAll();
-	public Mono<Customer> findById(Long id);
+	public Mono<Customer> findById(String id);
+	public Mono<Customer> findByDni(String dni);
 }

@@ -9,7 +9,7 @@ public abstract class BankProduct {
 	private String id;
 	private String accountNumber;
 	private String cci;
-	private Long customerId;
+	private String customerId;
 	private String amount;
 	private Boolean status;
 }

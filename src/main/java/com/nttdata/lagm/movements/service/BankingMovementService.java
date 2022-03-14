@@ -17,6 +17,5 @@ public interface BankingMovementService {
 	Mono<BankingMovement> findById(String id);
 	Flux<BankingMovement> findAllAccountMovementsByAccountNumber(String accountNumber);
 	Flux<BankingMovement> findAllCreditMovementsByAccountNumber(String accountNumber);
-	Flux<BankingMovement> findAllAccountMovementsByDni(String dni);
-	Flux<BankingMovement> findAllCreditMovementsByDni(String dni);
+	Flux<BankingMovement> findAllMovementsByDni(String dni);
 }

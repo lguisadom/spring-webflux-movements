@@ -37,15 +37,9 @@ public class CustomerProxyImpl implements CustomerProxy {
 	}
 	
 	@Override
-	public Mono<Customer> findById(Long id) {
+	public Mono<Customer> findById(String id) {
 		Map<String,Object> params = new HashMap<>();
 		params.put("id", id);
-		
-//		Mono<Customer> customerMono = webClient.get().uri(endpointCustomer + "/{id}", params)
-//			.accept(MediaType.APPLICATION_JSON)
-//			.retrieve()
-//			.bodyToMono(Customer.class);
-//		
 		return webClientBuilder
 				.clientConnector(RestUtils.getDefaultClientConnector())
 				.build()
@@ -55,4 +49,16 @@ public class CustomerProxyImpl implements CustomerProxy {
 				.bodyToMono(Customer.class);
 	}
 
+	@Override
+	public Mono<Customer> findByDni(String dni) {
+		Map<String,Object> params = new HashMap<>();
+		params.put("dni", dni);
+		return webClientBuilder
+				.clientConnector(RestUtils.getDefaultClientConnector())
+				.build()
+				.get()
+				.uri(endpointCustomer + "/dni/{dni}", params)
+				.retrieve()
+				.bodyToMono(Customer.class);
+	}
 }
