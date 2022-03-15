@@ -13,6 +13,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,6 +29,8 @@ public class BankingMovement {
 	// private Long bankProductTypeId;
 	private Integer bankingMovementType;
 	private String date;
-	private String amount;
 	private String bankingFee;
+	private BigDecimal amount;
+	private BigDecimal commision;
+	private BigDecimal finalAmount;
 }

@@ -1,6 +1,8 @@
 package com.nttdata.lagm.movements.util;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 
 public class Util {
@@ -56,5 +58,27 @@ public class Util {
     
     public static String getToday() {
     	return new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(Calendar.getInstance().getTime());
+    }
+
+    public static int getCurrentMonth() {
+        return LocalDate.now().getMonthValue();
+    }
+
+    public static int getCurrentYear() {
+        return LocalDate.now().getYear();
+    }
+
+    public static LocalDate getLocalDateFromStringDate(String strDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
+        LocalDate localDate = LocalDate.parse(strDate, formatter);
+        return localDate;
+    }
+
+    public static int getMonthFromStringDate(String strDate) {
+        return getLocalDateFromStringDate(strDate).getMonthValue();
+    }
+
+    public static int getYearFromStringDate(String strDate) {
+        return getLocalDateFromStringDate(strDate).getYear();
     }
 }

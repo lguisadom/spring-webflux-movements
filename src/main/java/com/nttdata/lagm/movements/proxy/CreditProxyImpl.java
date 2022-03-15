@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class CreditProxyImpl implements CreditProxy {
-	private Logger LOGGER = LoggerFactory.getLogger(AccountProxyImpl.class);
+	private Logger LOGGER = LoggerFactory.getLogger(CreditProxyImpl.class);
 
 	@Value("${config-eureka.base.credit.endpoint}")
 	private String endpointCredit;

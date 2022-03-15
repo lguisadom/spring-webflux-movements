@@ -18,4 +18,5 @@ public interface BankingMovementService {
 	Flux<BankingMovement> findAllAccountMovementsByAccountNumber(String accountNumber);
 	Flux<BankingMovement> findAllCreditMovementsByAccountNumber(String accountNumber);
 	Flux<BankingMovement> findAllMovementsByDni(String dni);
+	Flux<BankingMovement> findMovementsInCurrentMonthByAccountNumber(String accountNumber);
 }
