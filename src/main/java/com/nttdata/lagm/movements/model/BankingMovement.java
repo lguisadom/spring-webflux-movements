@@ -29,6 +29,7 @@ public class BankingMovement {
 	// private Long bankProductTypeId;
 	private BankingMovementType bankingMovementType;
 	private String date;
+	private String accountNumber;
 	private String bankingFee;
 	private BigDecimal amount;
 	private BigDecimal commision;

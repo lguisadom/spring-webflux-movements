@@ -1,22 +1,15 @@
 package com.nttdata.lagm.movements.controller;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.nttdata.lagm.movements.dto.request.MovementRequestDto;
+import com.nttdata.lagm.movements.dto.request.TransferRequestDto;
 import com.nttdata.lagm.movements.dto.response.BakingMovementResponseDto;
 import com.nttdata.lagm.movements.model.BankingMovement;
 import com.nttdata.lagm.movements.service.BankingMovementService;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -49,6 +42,12 @@ public class BankingMovementController {
 	@ResponseStatus(HttpStatus.CREATED)
 	private Mono<BakingMovementResponseDto> charge(@RequestBody MovementRequestDto movementRequestDto) {
 		return bankingMovementService.charge(movementRequestDto);
+	}
+
+	@PostMapping("/transfer")
+	@ResponseStatus(HttpStatus.CREATED)
+	private Flux<BakingMovementResponseDto> transfer(@RequestBody TransferRequestDto transferRequestDto) {
+		return bankingMovementService.transfer(transferRequestDto);
 	}
 	
 	@GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)

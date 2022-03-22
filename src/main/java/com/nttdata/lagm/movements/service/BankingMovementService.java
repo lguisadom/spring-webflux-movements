@@ -2,6 +2,7 @@ package com.nttdata.lagm.movements.service;
 
 import com.nttdata.lagm.movements.dto.request.BankingMovementRequestDto;
 import com.nttdata.lagm.movements.dto.request.MovementRequestDto;
+import com.nttdata.lagm.movements.dto.request.TransferRequestDto;
 import com.nttdata.lagm.movements.dto.response.BakingMovementResponseDto;
 import com.nttdata.lagm.movements.model.BankingMovement;
 import reactor.core.publisher.Flux;
@@ -19,4 +20,5 @@ public interface BankingMovementService {
 	Flux<BankingMovement> findAllCreditMovementsByAccountNumber(String accountNumber);
 	Flux<BankingMovement> findAllMovementsByDni(String dni);
 	Flux<BankingMovement> findMovementsInCurrentMonthByAccountNumber(String accountNumber);
+	Flux<BakingMovementResponseDto> transfer(TransferRequestDto transferRequestDto);
 }
