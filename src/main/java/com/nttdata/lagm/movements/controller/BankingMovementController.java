@@ -1,6 +1,7 @@
 package com.nttdata.lagm.movements.controller;
 
 
+import com.nttdata.lagm.movements.dto.request.MovementRequestBetweenDatesDto;
 import com.nttdata.lagm.movements.dto.request.MovementRequestDto;
 import com.nttdata.lagm.movements.dto.request.TransferRequestDto;
 import com.nttdata.lagm.movements.dto.response.BakingMovementResponseDto;
@@ -84,6 +85,12 @@ public class BankingMovementController {
 	@ResponseStatus(HttpStatus.OK)
 	private Flux<BankingMovement> findMovementsInCurrentMonthByAccountNumber(@PathVariable("accountNumber") String accountNumber) {
 		return bankingMovementService.findMovementsInCurrentMonthByAccountNumber(accountNumber);
+	}
+
+	@GetMapping(value="/findBetweenDates")
+	@ResponseStatus(HttpStatus.OK)
+	private Flux<BankingMovement> findBetweenDates(@RequestBody MovementRequestBetweenDatesDto movementRequestBetweenDatesDto) {
+		return bankingMovementService.findBetweenDates(movementRequestBetweenDatesDto);
 	}
 
 }

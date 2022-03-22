@@ -1,19 +1,15 @@
 package com.nttdata.lagm.movements.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -28,7 +24,8 @@ public class BankingMovement {
 	private String bankProductId;
 	// private Long bankProductTypeId;
 	private BankingMovementType bankingMovementType;
-	private String date;
+	@JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+	private LocalDateTime date;
 	private String accountNumber;
 	private String bankingFee;
 	private BigDecimal amount;

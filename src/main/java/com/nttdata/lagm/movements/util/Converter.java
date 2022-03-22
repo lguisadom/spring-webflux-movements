@@ -3,9 +3,6 @@ package com.nttdata.lagm.movements.util;
 import com.nttdata.lagm.movements.dto.request.BankingMovementRequestDto;
 import com.nttdata.lagm.movements.model.BankingMovement;
 import com.nttdata.lagm.movements.model.BankingMovementType;
-import org.bson.types.ObjectId;
-
-import java.math.BigDecimal;
 
 public class Converter {
     public static BankingMovement convertToBankingMovement(BankingMovementRequestDto bankingMovementRequestDto) {

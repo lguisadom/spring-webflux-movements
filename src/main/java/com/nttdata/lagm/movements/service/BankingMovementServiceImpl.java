@@ -1,21 +1,21 @@
 package com.nttdata.lagm.movements.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-import com.nttdata.lagm.movements.dto.request.BankingMovementRequestDto;
-import com.nttdata.lagm.movements.dto.request.TransferRequestDto;
-import com.nttdata.lagm.movements.model.BankingMovementType;
-import com.nttdata.lagm.movements.model.bankproduct.BankAccount;
-import com.nttdata.lagm.movements.model.bankproduct.Credit;
-import com.nttdata.lagm.movements.util.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.nttdata.lagm.movements.dto.response.BakingMovementResponseDto;
+import com.nttdata.lagm.movements.dto.request.MovementRequestBetweenDatesDto;
 import com.nttdata.lagm.movements.dto.request.MovementRequestDto;
+import com.nttdata.lagm.movements.dto.request.TransferRequestDto;
+import com.nttdata.lagm.movements.dto.response.BakingMovementResponseDto;
 import com.nttdata.lagm.movements.model.BankingMovement;
+import com.nttdata.lagm.movements.model.BankingMovementType;
+import com.nttdata.lagm.movements.model.bankproduct.BankAccount;
+import com.nttdata.lagm.movements.model.bankproduct.Credit;
 import com.nttdata.lagm.movements.proxy.AccountProxy;
 import com.nttdata.lagm.movements.proxy.CreditProxy;
 import com.nttdata.lagm.movements.proxy.CustomerProxy;
@@ -234,6 +234,16 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 			.thenMany(createTransfer(transferRequestDto));
 	}
 
+	@Override
+	public Flux<BankingMovement> findBetweenDates(MovementRequestBetweenDatesDto movementRequestBetweenDatesDto) {
+		String from = movementRequestBetweenDatesDto.getFrom();
+		String to = movementRequestBetweenDatesDto.getTo();
+		LocalDateTime fromDate = Util.getLocalDateTimeFromStringDate(from);
+		LocalDateTime toDate = Util.getLocalDateTimeFromStringDate(to, 23, 59);
+		LOGGER.info("BankingMovements between: from={} and to={}", from, to);
+		return bankingMovementRepository.findByDateBetween(fromDate, toDate);
+	}
+
 	private Flux<BakingMovementResponseDto> createTransfer(TransferRequestDto transferRequestDto) {
 		String sourceAccountNumber = transferRequestDto.getSourceAccountNumber();
 		String targetAccountNumber = transferRequestDto.getTargetAccountNumber();
@@ -378,8 +388,10 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 					return bankingMovementRepository.findAll()
 							.filter(movement ->
 									movement.getBankProductId().equals(bankAccountId) &&
-											Util.getMonthFromStringDate(movement.getDate()) == currentMonth &&
-											Util.getYearFromStringDate(movement.getDate()) == currentYear);
+									// Util.getMonthFromStringDate(movement.getDate()) == currentMonth &&
+									// Util.getYearFromStringDate(movement.getDate()) == currentYear);
+									movement.getDate().getMonthValue() == currentMonth &&
+									movement.getDate().getYear() == currentYear);
 				});
 	}
 
