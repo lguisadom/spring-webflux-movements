@@ -27,7 +27,7 @@ public class BankingMovement {
     private ObjectId id;
 	private String bankProductId;
 	// private Long bankProductTypeId;
-	private Integer bankingMovementType;
+	private BankingMovementType bankingMovementType;
 	private String date;
 	private String bankingFee;
 	private BigDecimal amount;

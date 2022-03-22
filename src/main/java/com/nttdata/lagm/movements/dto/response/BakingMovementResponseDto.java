@@ -1,4 +1,4 @@
-package com.nttdata.lagm.movements.entity;
+package com.nttdata.lagm.movements.dto.response;
 
 import com.nttdata.lagm.movements.model.BankingMovement;
 
@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class BakingMovementResponse {
+public class BakingMovementResponseDto {
 	private BankingMovement bankingMovement;
 	private String message;
 }

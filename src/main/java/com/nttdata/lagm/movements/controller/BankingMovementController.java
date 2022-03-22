@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nttdata.lagm.movements.entity.BakingMovementResponse;
-import com.nttdata.lagm.movements.entity.MovementRequest;
+import com.nttdata.lagm.movements.dto.request.MovementRequestDto;
+import com.nttdata.lagm.movements.dto.response.BakingMovementResponseDto;
 import com.nttdata.lagm.movements.model.BankingMovement;
 import com.nttdata.lagm.movements.service.BankingMovementService;
 
@@ -29,26 +29,26 @@ public class BankingMovementController {
 	
 	@PostMapping("/deposit")
 	@ResponseStatus(HttpStatus.CREATED)
-	private Mono<BakingMovementResponse> deposit(@RequestBody MovementRequest movementRequest) {
-		return bankingMovementService.deposit(movementRequest);
+	private Mono<BakingMovementResponseDto> deposit(@RequestBody MovementRequestDto movementRequestDto) {
+		return bankingMovementService.deposit(movementRequestDto);
 	}
 	
 	@PostMapping("/withdraw")
 	@ResponseStatus(HttpStatus.CREATED)
-	private Mono<BakingMovementResponse> withdraw(@RequestBody MovementRequest movementRequest) {
-		return bankingMovementService.withdraw(movementRequest);
+	private Mono<BakingMovementResponseDto> withdraw(@RequestBody MovementRequestDto movementRequestDto) {
+		return bankingMovementService.withdraw(movementRequestDto);
 	}
 	
 	@PostMapping("/pay")
 	@ResponseStatus(HttpStatus.CREATED)
-	private Mono<BakingMovementResponse> pay(@RequestBody MovementRequest movementRequest) {
-		return bankingMovementService.pay(movementRequest);
+	private Mono<BakingMovementResponseDto> pay(@RequestBody MovementRequestDto movementRequestDto) {
+		return bankingMovementService.pay(movementRequestDto);
 	}
 	
 	@PostMapping("/charge")
 	@ResponseStatus(HttpStatus.CREATED)
-	private Mono<BakingMovementResponse> charge(@RequestBody MovementRequest movementRequest) {
-		return bankingMovementService.charge(movementRequest);
+	private Mono<BakingMovementResponseDto> charge(@RequestBody MovementRequestDto movementRequestDto) {
+		return bankingMovementService.charge(movementRequestDto);
 	}
 	
 	@GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)

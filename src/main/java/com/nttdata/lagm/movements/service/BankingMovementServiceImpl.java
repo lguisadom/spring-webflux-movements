@@ -2,14 +2,17 @@ package com.nttdata.lagm.movements.service;
 
 import java.math.BigDecimal;
 
+import com.nttdata.lagm.movements.dto.request.BankingMovementRequestDto;
+import com.nttdata.lagm.movements.model.BankingMovementType;
 import com.nttdata.lagm.movements.model.bankproduct.BankAccount;
+import com.nttdata.lagm.movements.util.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.nttdata.lagm.movements.entity.BakingMovementResponse;
-import com.nttdata.lagm.movements.entity.MovementRequest;
+import com.nttdata.lagm.movements.dto.response.BakingMovementResponseDto;
+import com.nttdata.lagm.movements.dto.request.MovementRequestDto;
 import com.nttdata.lagm.movements.model.BankingMovement;
 import com.nttdata.lagm.movements.proxy.AccountProxy;
 import com.nttdata.lagm.movements.proxy.CreditProxy;
@@ -41,15 +44,15 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 	@Override
 	public Mono<BankingMovement> create(BankingMovement bankingMovement) {
 		LOGGER.info("Create movement: " + bankingMovement);
-		return checkBankProductExist(bankingMovement.getBankProductId(), bankingMovement.getBankingMovementType())
-				.mergeWith(checkBankMovementTypeExist(bankingMovement.getBankingMovementType()))
+		return checkBankProductExist(bankingMovement.getBankProductId(), bankingMovement.getBankingMovementType().getId())
+				.mergeWith(checkBankMovementTypeExist(bankingMovement.getBankingMovementType().getId()))
 				.then(this.bankingMovementRepository.save(bankingMovement));
 	}
 
 	@Override
-	public Mono<BakingMovementResponse> deposit(MovementRequest movementRequest) {
-		BigDecimal amount = new BigDecimal(movementRequest.getAmount());
-		String accountNumber = movementRequest.getAccountNumber();
+	public Mono<BakingMovementResponseDto> deposit(MovementRequestDto movementRequestDto) {
+		BigDecimal amount = new BigDecimal(movementRequestDto.getAmount());
+		String accountNumber = movementRequestDto.getAccountNumber();
 
 		return checkAccountNumberExists(accountNumber)
 		.then(accountProxy.findByAccountNumber(accountNumber)
@@ -72,7 +75,12 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 						// Validation of maximum number of transactions
 						BankingMovement bankingMovement = new BankingMovement();
 						bankingMovement.setBankProductId(account.getId());
-						bankingMovement.setBankingMovementType(Constants.ID_BANK_PRODUCT_ACCOUNT_DEPOSIT);
+
+						BankingMovementType bankingMovementType = new BankingMovementType();
+						bankingMovementType.setId(Constants.ID_BANK_PRODUCT_ACCOUNT_DEPOSIT);
+						bankingMovementType.setDescription(Util.bankingMovementTypeDescription(Constants.ID_BANK_PRODUCT_ACCOUNT_DEPOSIT));
+						bankingMovement.setBankingMovementType(bankingMovementType);
+
 						bankingMovement.setDate(Util.getToday());
 						bankingMovement.setAmount(amount);
 						bankingMovement.setCommision(commision);
@@ -82,7 +90,7 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 							LOGGER.info("Remaining amount in account: " + availableAmount.subtract(finalAmount));
 							return accountProxy.updateAmount(movement.getBankProductId(), finalAmount.toString())
 								.flatMap(accountUpdated -> {
-									BakingMovementResponse bakingMovementResponse = new BakingMovementResponse(movement,
+									BakingMovementResponseDto bakingMovementResponse = new BakingMovementResponseDto(movement,
 											"Movement ok");
 									return Mono.just(bakingMovementResponse);
 								});
@@ -92,10 +100,10 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 	}
 
 	@Override
-	public Mono<BakingMovementResponse> withdraw(MovementRequest movementRequest) {
+	public Mono<BakingMovementResponseDto> withdraw(MovementRequestDto movementRequestDto) {
 		LOGGER.info("Movements withdraw: ");
-		BigDecimal amount = new BigDecimal(movementRequest.getAmount());
-		String accountNumber = movementRequest.getAccountNumber();
+		BigDecimal amount = new BigDecimal(movementRequestDto.getAmount());
+		String accountNumber = movementRequestDto.getAccountNumber();
 		return checkAccountNumberExists(accountNumber)
 			.then(accountProxy.findByAccountNumber(accountNumber)
 				.flatMap(account -> {
@@ -117,7 +125,12 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 							// Validation of maximum number of transactions
 							BankingMovement bankingMovement = new BankingMovement();
 							bankingMovement.setBankProductId(account.getId());
-							bankingMovement.setBankingMovementType(Constants.ID_BANK_PRODUCT_ACCOUNT_WITHDRAWAL);
+
+							BankingMovementType bankingMovementType = new BankingMovementType();
+							bankingMovementType.setId(Constants.ID_BANK_PRODUCT_ACCOUNT_WITHDRAWAL);
+							bankingMovementType.setDescription(Util.bankingMovementTypeDescription(Constants.ID_BANK_PRODUCT_ACCOUNT_WITHDRAWAL));
+							bankingMovement.setBankingMovementType(bankingMovementType);
+
 							bankingMovement.setDate(Util.getToday());
 							bankingMovement.setAmount(amount);
 							bankingMovement.setCommision(commision);
@@ -128,7 +141,7 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 									LOGGER.info("Remaining amount in account: " + availableAmount.subtract(finalAmount));
 									return accountProxy.updateAmount(movement.getBankProductId(), finalAmount.multiply(new BigDecimal(-1)).toString())
 									.flatMap(accountUpdated -> {
-										BakingMovementResponse bakingMovementResponse = new BakingMovementResponse(movement,
+										BakingMovementResponseDto bakingMovementResponse = new BakingMovementResponseDto(movement,
 												"Movement ok");
 										return Mono.just(bakingMovementResponse);
 									});
@@ -138,16 +151,21 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 	}
 
 	@Override
-	public Mono<BakingMovementResponse> pay(MovementRequest movementRequest) {
-		BigDecimal amount = new BigDecimal(movementRequest.getAmount());
-		String accountNumber = movementRequest.getAccountNumber();
+	public Mono<BakingMovementResponseDto> pay(MovementRequestDto movementRequestDto) {
+		BigDecimal amount = new BigDecimal(movementRequestDto.getAmount());
+		String accountNumber = movementRequestDto.getAccountNumber();
 		return checkCreditNumberExists(accountNumber)
 				.then(creditProxy.findByAccountNumber(accountNumber).flatMap(credit -> {
 					LOGGER.info("credit: " + credit.toString());
 					BigDecimal finalAmount = amount;
 					BankingMovement bankingMovement = new BankingMovement();
 					bankingMovement.setBankProductId(credit.getId());
-					bankingMovement.setBankingMovementType(Constants.ID_BANK_PRODUCT_CREDIT_PAYMENT);
+
+					BankingMovementType bankingMovementType = new BankingMovementType();
+					bankingMovementType.setId(Constants.ID_BANK_PRODUCT_CREDIT_PAYMENT);
+					bankingMovementType.setDescription(Util.bankingMovementTypeDescription(Constants.ID_BANK_PRODUCT_CREDIT_PAYMENT));
+					bankingMovement.setBankingMovementType(bankingMovementType);
+
 					bankingMovement.setDate(Util.getToday());
 					bankingMovement.setAmount(amount);
 					bankingMovement.setFinalAmount(finalAmount);
@@ -156,7 +174,7 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 						return creditProxy
 								.updateAmount(movement.getBankProductId(), movement.getAmount().doubleValue())
 								.flatMap(accountUpdated -> {
-									BakingMovementResponse bakingMovementResponse = new BakingMovementResponse(movement,
+									BakingMovementResponseDto bakingMovementResponse = new BakingMovementResponseDto(movement,
 											"Movement ok");
 									return Mono.just(bakingMovementResponse);
 								});
@@ -165,17 +183,22 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 	}
 
 	@Override
-	public Mono<BakingMovementResponse> charge(MovementRequest movementRequest) {
-		BigDecimal amount = new BigDecimal(movementRequest.getAmount());
-		String accountNumber = movementRequest.getAccountNumber();
+	public Mono<BakingMovementResponseDto> charge(MovementRequestDto movementRequestDto) {
+		BigDecimal amount = new BigDecimal(movementRequestDto.getAmount());
+		String accountNumber = movementRequestDto.getAccountNumber();
 		return checkCreditNumberExists(accountNumber)
-				.mergeWith(checkAvailableAmountInCredit(movementRequest))
+				.mergeWith(checkAvailableAmountInCredit(movementRequestDto))
 				.then(creditProxy.findByAccountNumber(accountNumber).flatMap(credit -> {
 					LOGGER.info("credit: " + credit.toString());
 					BigDecimal finalAmount = amount;
 					BankingMovement bankingMovement = new BankingMovement();
 					bankingMovement.setBankProductId(credit.getId());
-					bankingMovement.setBankingMovementType(Constants.ID_BANK_PRODUCT_CREDIT_CHARGE);
+
+					BankingMovementType bankingMovementType = new BankingMovementType();
+					bankingMovementType.setId(Constants.ID_BANK_PRODUCT_CREDIT_CHARGE);
+					bankingMovementType.setDescription(Util.bankingMovementTypeDescription(Constants.ID_BANK_PRODUCT_CREDIT_CHARGE));
+					bankingMovement.setBankingMovementType(bankingMovementType);
+
 					bankingMovement.setDate(Util.getToday());
 					bankingMovement.setAmount(amount);
 					bankingMovement.setFinalAmount(finalAmount);
@@ -184,7 +207,7 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 						return creditProxy
 								.updateAmount(movement.getBankProductId(), movement.getAmount().doubleValue() * -1)
 								.flatMap(accountUpdated -> {
-									BakingMovementResponse bakingMovementResponse = new BakingMovementResponse(movement,
+									BakingMovementResponseDto bakingMovementResponse = new BakingMovementResponseDto(movement,
 											"Movement ok");
 									return Mono.just(bakingMovementResponse);
 								});
@@ -239,7 +262,7 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 		return Mono.empty();
 	}
 
-	private Mono<Void> checkAvailableAmountInCredit(MovementRequest movementRequest) {
+	private Mono<Void> checkAvailableAmountInCredit(MovementRequestDto movementRequest) {
 		BigDecimal amount = new BigDecimal(movementRequest.getAmount());
 		String accountNumber = movementRequest.getAccountNumber();
 		return creditProxy.findByAccountNumber(accountNumber)
