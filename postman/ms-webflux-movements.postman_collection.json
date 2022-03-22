@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"accountNumber\": \"19135813408051\",\r\n    \"amount\": \"50.00\"\r\n}",
+					"raw": "{\r\n    \"accountNumber\": \"19135813408156\",\r\n    \"amount\": \"50.00\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -43,7 +43,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"accountNumber\": \"19135813408051\",\r\n    \"amount\": \"25\"\r\n}",
+					"raw": "{\r\n    \"accountNumber\": \"19135813408156\",\r\n    \"amount\": \"50\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -105,7 +105,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"accountNumber\": \"29135813408052\",\r\n    \"amount\": \"52.00\"\r\n}",
+					"raw": "{\r\n    \"accountNumber\": \"29135813408067\",\r\n    \"amount\": \"52.00\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -238,6 +238,60 @@
 						"movement",
 						"dni",
 						"46687130"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "test",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8085/api/v1/movement/findMovementsInCurrentMonthByAccountNumber/19135813408156",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"api",
+						"v1",
+						"movement",
+						"findMovementsInCurrentMonthByAccountNumber",
+						"19135813408156"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Transfer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"sourceAccountNumber\": \"19135813408156\",\r\n    \"targetAccountNumber\": \"19135813408062\",\r\n    \"amount\": \"10.00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8085/api/v1/movement/transfer",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"api",
+						"v1",
+						"movement",
+						"transfer"
 					]
 				}
 			},
