@@ -238,8 +238,8 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 	public Flux<BankingMovement> findBetweenDates(MovementRequestBetweenDatesDto movementRequestBetweenDatesDto) {
 		String from = movementRequestBetweenDatesDto.getFrom();
 		String to = movementRequestBetweenDatesDto.getTo();
-		LocalDateTime fromDate = Util.getLocalDateTimeFromStringDate(from);
-		LocalDateTime toDate = Util.getLocalDateTimeFromStringDate(to, 23, 59);
+		LocalDateTime fromDate = Util.getLocalDateTimeFromStringDate(from, "dd-MM-yyyy");
+		LocalDateTime toDate = Util.getLocalDateTimeFromStringDate(to, 23, 59, "dd-MM-yyyy");
 		LOGGER.info("BankingMovements between: from={} and to={}", from, to);
 		return bankingMovementRepository.findByDateBetween(fromDate, toDate);
 	}
@@ -388,8 +388,6 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 					return bankingMovementRepository.findAll()
 							.filter(movement ->
 									movement.getBankProductId().equals(bankAccountId) &&
-									// Util.getMonthFromStringDate(movement.getDate()) == currentMonth &&
-									// Util.getYearFromStringDate(movement.getDate()) == currentYear);
 									movement.getDate().getMonthValue() == currentMonth &&
 									movement.getDate().getYear() == currentYear);
 				});

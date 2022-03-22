@@ -81,12 +81,12 @@ public class Util {
     }
 
 
-    public static LocalDateTime getLocalDateTimeFromStringDate(String strDate) {
-        return Util.getLocalDateTimeFromStringDate(strDate, 0, 0);
+    public static LocalDateTime getLocalDateTimeFromStringDate(String strDate, String format) {
+        return Util.getLocalDateTimeFromStringDate(strDate, 0, 0, format);
     }
 
-    public static LocalDateTime getLocalDateTimeFromStringDate(String strDate, int hours, int minutes) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    public static LocalDateTime getLocalDateTimeFromStringDate(String strDate, int hours, int minutes, String format) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         LocalDate localDate = LocalDate.parse(strDate, formatter);
         LocalDateTime ldt = LocalDateTime.of(localDate, LocalTime.of(hours, minutes));
         return ldt;

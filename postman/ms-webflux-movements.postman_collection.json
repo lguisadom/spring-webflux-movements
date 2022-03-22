@@ -273,7 +273,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"sourceAccountNumber\": \"19135813408156\",\r\n    \"targetAccountNumber\": \"19135813408062\",\r\n    \"amount\": \"10.00\"\r\n}",
+					"raw": "{\r\n    \"sourceAccountNumber\": \"19135813408156\",\r\n    \"targetAccountNumber\": \"19135813408062\",\r\n    \"amount\": \"1.00\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -292,6 +292,44 @@
 						"v1",
 						"movement",
 						"transfer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "findBetweenDates",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8085/api/v1/movement/findBetweenDates/from/22-03-2022/to/23-03-2022",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8085",
+					"path": [
+						"api",
+						"v1",
+						"movement",
+						"findBetweenDates",
+						"from",
+						"22-03-2022",
+						"to",
+						"23-03-2022"
 					]
 				}
 			},

@@ -87,9 +87,10 @@ public class BankingMovementController {
 		return bankingMovementService.findMovementsInCurrentMonthByAccountNumber(accountNumber);
 	}
 
-	@GetMapping(value="/findBetweenDates")
+	@GetMapping(value="/findBetweenDates/from/{from}/to/{to}")
 	@ResponseStatus(HttpStatus.OK)
-	private Flux<BankingMovement> findBetweenDates(@RequestBody MovementRequestBetweenDatesDto movementRequestBetweenDatesDto) {
+	private Flux<BankingMovement> findBetweenDates(@PathVariable String from, @PathVariable String to) {
+		MovementRequestBetweenDatesDto movementRequestBetweenDatesDto = new MovementRequestBetweenDatesDto(from, to);
 		return bankingMovementService.findBetweenDates(movementRequestBetweenDatesDto);
 	}
 
