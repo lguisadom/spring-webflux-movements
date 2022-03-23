@@ -1,9 +1,11 @@
 spring:
   application:
     name: service-movements #(1)
-  profiles:
-    active:
-    - azure #(2)
+  cloud:
+    config:
+      profile: prod #(3) dev, qa, prod
+  config:
+    import: optional:configserver:https://bootcamp2022-ms-configserver.azurewebsites.net #(4)
 # 1.- Aqui se puede definir un nombre para la aplicacion, el cual reemplazará al 
 #     definido en el pom.xml.
 #

@@ -1,9 +1,11 @@
 spring:
   application:
     name: service-movements #(1)
-  profiles:
-    active:
-    - azure #(2)
+  cloud:
+    config:
+      profile: dev #(3) dev, qa, prod
+  config:
+    import: optional:configserver:http://localhost:8086 #(4)    
 # 1.- Aqui se puede definir un nombre para la aplicacion, el cual reemplazará al 
 #     definido en el pom.xml.
 #
