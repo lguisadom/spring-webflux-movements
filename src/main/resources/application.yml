@@ -3,7 +3,7 @@ spring:
     name: service-movements #(1)
   profiles:
     active:
-    - azure #(2)
+    - dev #(2) dev, azure
 # 1.- Aqui se puede definir un nombre para la aplicacion, el cual reemplazará al 
 #     definido en el pom.xml.
 #
