@@ -70,7 +70,7 @@ public class BankingMovementServiceImpl implements BankingMovementService {
 
 								BigDecimal aditional = commision.multiply(amount);
 								BigDecimal finalAmount = amount.subtract(aditional);
-								LOGGER.info("Initial amount to withdraw: " + amount);
+								LOGGER.info("Initial amount to deposit: " + amount);
 								LOGGER.info("Aditional (commision): " + aditional);
 								LOGGER.info("Final Amount: " + finalAmount);
 
